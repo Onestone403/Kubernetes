@@ -1,0 +1,135 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: chat-server
+  name: chat-server
+spec:
+  replicas: 2 
+  selector:
+    matchLabels:
+      io.kompose.service: chat-server
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/pse-chatnetwork: "true"
+        io.kompose.service: chat-server
+    spec:
+      containers:
+        - image: chatimage:1.0
+          imagePullPolicy: Never
+          name: chat-server
+          ports:
+            - containerPort: 3000
+          resources: {}
+      restartPolicy: Always
+status: {}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: chat-server
+  name: chat-server
+spec:
+  ports:
+    - name: "80"
+      port: 80
+      targetPort: 3000
+  selector:
+    io.kompose.service: chat-server
+  type: NodePort
+status:
+  loadBalancer: {}
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (HEAD)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: userdb
+  name: userdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: userdb
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (HEAD)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/pse-chatnetwork: "true"
+        io.kompose.service: userdb
+    spec:
+      containers:
+        - image: mongo:latest
+          name: chatdb
+          resources: {}
+          volumeMounts:
+            - mountPath: /data/db
+              name: userdb
+      restartPolicy: Always
+      volumes:
+        - name: userdb
+          persistentVolumeClaim:
+            claimName: userdb
+status: {}
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  creationTimestamp: null
+  labels:
+    io.kompose.service: userdb
+  name: userdb
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+status: {}
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  creationTimestamp: null
+  name: pse-chatnetwork
+spec:
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              io.kompose.network/pse-chatnetwork: "true"
+  podSelector:
+    matchLabels:
+      io.kompose.network/pse-chatnetwork: "true"
