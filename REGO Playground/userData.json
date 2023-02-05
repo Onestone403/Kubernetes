@@ -1,0 +1,33 @@
+{
+    "user_roles": {
+        "tim": [
+            "admin"
+        ],
+        "jimmy": [
+            "customer"
+        ]
+    },
+    "roles": {
+        "customer": [
+            {
+                "method": "GET"
+            }
+        ],
+        "admin": [
+            {
+                "method": "GET"
+            },
+            {
+                "method": "POST"
+            },
+            {
+                "method": "PUT"
+            },
+            {
+                "method": "DELETE"
+            }
+        ]
+    }
+}
+
+
