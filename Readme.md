@@ -29,16 +29,16 @@ or all at one with de complete yaml:
 
 `kubectl apply -f deployments/chatapp-deployment-complete.yml`
 
-To check wether the deployment was successfull, verify that all pods are up and running:
+To check wether the deployment was successful, verify that all pods are up and running:
 
 `kubectl get pods`
 
-To access the application check the services to see on which port the application is accesible on your localhost.
+To access the application check the services to see on which port the application is accessible on your localhost.
 
 `kubectl get services`
 
 If up and running you can acces the application your webbrowser via: 
-[localhost:<port>]
+[localhost:YourPort]
 
 ### 2. Install Gatekeeper
 
@@ -46,7 +46,7 @@ To install Gatekeeper just use the official prebuild image.
 
 `kubectl apply -f https://raw.githubusercontent.com/open-policy-agent/gatekeeper/master/deploy/gatekeeper.yaml`
 
-If the installation succeded you should see a new namespace gatekeeper-system" in your cluster.
+If the installation succeded you should see a new namespace "gatekeeper-system" in your cluster.
 
 To check use: `kubectl get namespaces`
 
@@ -68,14 +68,14 @@ Check the violations of the constraint in your cluster:
 
 `kubectl describe constraint replica-limit`
 
-You may see some violation by the gatekeeper-system, but for now just ignore them an check only the violations of the other deployments. 
-The userdb doesn't match the requirements as it only has one replica set.
-To scale the userdb you would need to edit the whole mongo deployment, to be able to share the same data amongst multiple pods.
+Without the name match (chat*) in the constraint,
+you would see some violation by the gatekeeper-system and the userdb deployment.
+To scale the userdb and provide multiple replicas, you would need to edit the whole mongo deployment to be able to share the same data amongst multiple pods.
 
 Therefore we just focus on the chat-server deployment.
 
 Now edit the valid chat-server deployment.
-Therefore,you can either use vim or scale the deployment via command.
+You can either use vim or scale the deployment via command.
 
 `kubectl scale --replicas=6 deployment/chat-server`
 

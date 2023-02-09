@@ -7,6 +7,7 @@ spec:
     kinds:
       - apiGroups: ["apps"]
         kinds: ["Deployment"]
+    name: chat*
   parameters:
     ranges:
     - min_replicas: 2

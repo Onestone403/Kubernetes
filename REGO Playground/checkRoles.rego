@@ -14,8 +14,8 @@ default allow := false
 allow if user_is_admin
 
 allow if {
-	some role in user_methods
-	input.method == role.method
+	some method in user_methods
+	input.method == method.method
 }
 
 user_is_admin if "admin" in data.user_roles[input.user]
